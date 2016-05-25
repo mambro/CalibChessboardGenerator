@@ -1,0 +1,7 @@
+# Ignore all files in the build/ directory
+build/
+# Ignore all temporary files, usually marker with a tilde.
+*~
+# Ignore all hidden .git of previous git repository
+*.githidden
+
