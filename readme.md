@@ -1,4 +1,8 @@
-Usage: chessboard_test
+This simple tool allows to generate a chessboard with the required characteristics (number of squares, resolution) for 
+camera and projector calibration.
+
+
+Options: 
     -w <image_width>        # the width in pixels of the output pattern
     -h <image_width>        # the height in pixels of the output pattern
     -x <board_width>        # the number of inner corners on the horizontal dimension
