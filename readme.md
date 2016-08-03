@@ -10,6 +10,8 @@ Options:
 * **-x** *\<board_width\>*        # the number of inner corners on the horizontal dimension
 * **-y** *\<board_width\>*         # the number of inner corners on the vertical dimension
 * **-s** *\<square_size\>*        # the size in pixels of each square
+* **-sx** *\<square_x_size>       # the size of x side in pixels \n"
+* **-sy** *\<square_y_size>       # the size of x side in pixels \n"
 * **-save**                   # enable saving of the pattern
 * **-show**                   # enable display of the pattern
 
@@ -27,6 +29,6 @@ Usually, the calibration requires the projector to show the fullscreen image of 
 ***
 
 Command example:
-<pre> ./chessboard_generator -w 1024 -h 768 -x 7 -y 5 -s 128 -show </pre> 
+<pre> ./chessboard_generator -w 1280 -h 800 -x 7 -y 4 -sx 160 -sy 160 -show </pre> 
 
 *This command shows a grid of 8x6 squares for a device with resolution 1024x768.*

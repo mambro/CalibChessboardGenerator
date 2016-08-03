@@ -22,7 +22,8 @@ static void help(){
            "    -h <image_height>        # the height in pixels of the output pattern\n"
            "    -x <board_width>        # the number of inner corners on the horizontal dimension\n"
            "    -y <board_height>        # the number of inner corners on the vertical dimension\n"
-           "    -s <square_size>        # the size in pixels to make each square\n"
+           "    -sx <square_x_size>       # the size of x side in pixels \n"
+           "    -sy <square_y_size>       # the size of y side in pixels \n"
            "    -save                   # enable saving of the pattern\n"
            "    -show                   # enable display of the pattern\n"
            "\n" );
@@ -30,8 +31,9 @@ static void help(){
 
 int main(int argc, char** argv){
     
-    Size boardSize,imageSize;
-    int sqrSize = -1;
+    Size2f boardSize,imageSize;
+    float sqr_x_Size = -1;
+    float sqr_y_Size = -1;
     bool save_image = false;
     bool show_image = false;
 
@@ -50,27 +52,32 @@ int main(int argc, char** argv){
         
         if( strcmp( s, "-w" ) == 0 )
         {
-            if( sscanf( argv[++i], "%u", &imageSize.width ) != 1 || imageSize.width <= 0 )
+            if( sscanf( argv[++i], "%f", &imageSize.width ) != 1 || imageSize.width <= 0 )
                 return fprintf( stderr, "Invalid image width\n" ), -1;
         }
         else if( strcmp( s, "-h" ) == 0 )
         {
-            if( sscanf( argv[++i], "%u", &imageSize.height ) != 1 || imageSize.height <= 0 )
+            if( sscanf( argv[++i], "%f", &imageSize.height ) != 1 || imageSize.height <= 0 )
                 return fprintf( stderr, "Invalid image height\n" ), -1;
         }
         else if( strcmp( s, "-x" ) == 0 )
         {
-            if( sscanf( argv[++i], "%u", &boardSize.width ) != 1 || boardSize.width <= 0 )
+            if( sscanf( argv[++i], "%f", &boardSize.width ) != 1 || boardSize.width <= 0 )
                 return fprintf( stderr, "Invalid board height\n" ), -1;
         }
         else if( strcmp( s, "-y" ) == 0 )
         {
-            if( sscanf( argv[++i], "%u", &boardSize.height ) != 1 || boardSize.height <= 0 )
+            if( sscanf( argv[++i], "%f", &boardSize.height ) != 1 || boardSize.height <= 0 )
                 return fprintf( stderr, "Invalid board height\n" ), -1;
         }
-        else if( strcmp( s, "-s" ) == 0 )
+        else if( strcmp( s, "-sx" ) == 0 )
         {
-            if( sscanf( argv[++i], "%u", &sqrSize ) != 1 || sqrSize <= 0 )
+            if( sscanf( argv[++i], "%f", &sqr_x_Size ) != 1 || sqr_x_Size <= 0 )
+                return fprintf( stderr, "Invalid square size\n" ), -1;
+        }
+        else if( strcmp( s, "-sy" ) == 0 )
+        {
+            if( sscanf( argv[++i], "%f", &sqr_y_Size ) != 1 || sqr_y_Size <= 0 )
                 return fprintf( stderr, "Invalid square size\n" ), -1;
         }
         else if(strcmp("-save",s)==0)
@@ -90,7 +97,7 @@ int main(int argc, char** argv){
     
     float scl = 0.75;
     
-    if( sqrSize <= 0 ){
+    if( sqr_x_Size <= 0 || sqr_y_Size <= 0 ){
         
         // auto calculate square size
         float x_sz = imageSize.width / (float)boardSize.width;
@@ -98,24 +105,27 @@ int main(int argc, char** argv){
         x_sz *= scl;
         y_sz *= scl;
         
-        sqrSize = min(x_sz, y_sz);
-        cout << "square size = " << sqrSize << endl;
+        sqr_x_Size = min(x_sz, y_sz);
+        sqr_y_Size = sqr_x_Size;
+        cout << "square size = " << sqr_x_Size << endl;
     }
     
-    Size2i chess_img_size = boardSize * sqrSize;
+    Size2f chess_img_x_size = boardSize * sqr_x_Size;
+    Size2f chess_img_y_size = boardSize * sqr_y_Size;
+
     
-    Point2i roi_vertex( (imageSize.width - chess_img_size.width)/2,
-                       (imageSize.height - chess_img_size.height)/2 );
+    Point2f roi_vertex( (imageSize.width - chess_img_x_size.width)/2,
+                       (imageSize.height - chess_img_y_size.height)/2 );
     
     Mat chessboard(imageSize,CV_8UC3,Scalar::all(255));
-    Mat chessboard_roi( chessboard,Rect(roi_vertex.x,roi_vertex.y,chess_img_size.width,chess_img_size.height ) );
+    Mat chessboard_roi( chessboard,Rect(roi_vertex.x,roi_vertex.y,chess_img_x_size.width,chess_img_y_size.height ) );
     
     cout << "Initializing chessboard..";
     for (int r=0; r<boardSize.height; r++)
     {
         for (int c=0; c<boardSize.width; c++)
         {
-            Mat sub_roi(chessboard_roi,Rect(sqrSize*c,sqrSize*r,sqrSize,sqrSize));
+            Mat sub_roi(chessboard_roi,Rect(sqr_x_Size*c,sqr_y_Size*r,sqr_x_Size,sqr_y_Size));
             
             if( (r+c)%2 == 1 )
                 sub_roi.setTo(Scalar::all(255));
